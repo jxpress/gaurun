@@ -90,15 +90,19 @@ func enqueueNotifications(notifications []RequestGaurunNotification) {
 func pushNotificationIos(req RequestGaurunNotification) error {
 	LogError.Debug("START push notification for iOS")
 
-	service := NewApnsServiceHttp2(APNSClient)
-
 	token := req.Tokens[0]
 
 	headers := NewApnsHeadersHttp2(&req)
 	payload := NewApnsPayloadHttp2(&req)
 
+	var err error
 	stime := time.Now()
-	err := ApnsPushHttp2(token, service, headers, payload)
+	if ConfGaurun.Ios.UseJWT {
+		err = ApnsPushToken(token, APNSClientToken, payload)
+	} else {
+		service := NewApnsServiceHttp2(APNSClient)
+		err = ApnsPushHttp2(token, service, headers, payload)
+	}
 
 	etime := time.Now()
 	ptime := etime.Sub(stime).Seconds()

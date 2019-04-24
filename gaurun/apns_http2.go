@@ -14,6 +14,8 @@ import (
 	"github.com/RobotsAndPencils/buford/payload"
 	"github.com/RobotsAndPencils/buford/payload/badge"
 	"github.com/RobotsAndPencils/buford/push"
+	"github.com/sideshow/apns2"
+	"github.com/sideshow/apns2/token"
 
 	"golang.org/x/net/http2"
 )
@@ -56,6 +58,23 @@ func NewApnsClientHttp2(certPath, keyPath, keyPassphrase string) (*http.Client, 
 		Transport: transport,
 		Timeout:   time.Duration(ConfGaurun.Ios.Timeout) * time.Second,
 	}, nil
+}
+
+func NewApnsClientToken(authKeyPath, keyID, teamID string) (*apns2.Client, error) {
+	authKey, err := token.AuthKeyFromFile(authKeyPath)
+	if err != nil {
+		return nil, err
+	}
+
+	token := &token.Token{
+		AuthKey: authKey,
+		KeyID:   keyID,
+		TeamID:  teamID,
+	}
+
+	client := apns2.NewTokenClient(token)
+
+	return client, nil
 }
 
 func loadX509KeyPairWithPassword(certPath, keyPath, keyPassphrase string) (tls.Certificate, error) {
@@ -138,5 +157,27 @@ func ApnsPushHttp2(token string, service *push.Service, headers *push.Headers, p
 		return err
 	}
 	_, err = service.Push(token, headers, b)
+	return err
+}
+
+func ApnsPushToken(token string, client *apns2.Client, payload map[string]interface{}) error {
+	b, err := json.Marshal(payload)
+	if err != nil {
+		return err
+	}
+
+	notification := &apns2.Notification{
+		DeviceToken: token,
+		Topic:       ConfGaurun.Ios.Topic,
+		Payload:     b,
+	}
+
+	if ConfGaurun.Ios.Sandbox {
+		client = client.Development()
+	} else {
+		client = client.Production()
+	}
+
+	_, err = client.Push(notification)
 	return err
 }

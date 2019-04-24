@@ -58,11 +58,21 @@ func InitGCMClient() error {
 
 func InitAPNSClient() error {
 	var err error
-	APNSClient, err = NewApnsClientHttp2(
-		ConfGaurun.Ios.PemCertPath,
-		ConfGaurun.Ios.PemKeyPath,
-		ConfGaurun.Ios.PemKeyPassphrase,
-	)
+	if ConfGaurun.Ios.UseJWT {
+		APNSClientToken, err = NewApnsClientToken(
+			ConfGaurun.Ios.AuthKeyPath,
+			ConfGaurun.Ios.KeyID,
+			ConfGaurun.Ios.TeamID,
+		)
+	} else {
+		APNSClient, err = NewApnsClientHttp2(
+			ConfGaurun.Ios.PemCertPath,
+			ConfGaurun.Ios.PemKeyPath,
+			ConfGaurun.Ios.PemKeyPassphrase,
+		)
+
+	}
+
 	if err != nil {
 		return err
 	}

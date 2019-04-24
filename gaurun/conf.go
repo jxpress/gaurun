@@ -48,6 +48,10 @@ type SectionIos struct {
 	KeepAliveTimeout int    `toml:"keepalive_timeout"`
 	KeepAliveConns   int    `toml:"keepalive_conns"`
 	Topic            string `toml:"topic"`
+	UseJWT           bool   `toml:"use_jwt"`
+	AuthKeyPath      string `toml:"auth_key_path"`
+	KeyID            string `toml:"key_id"`
+	TeamID           string `toml:"team_id"`
 }
 
 type SectionLog struct {
@@ -86,6 +90,10 @@ func BuildDefaultConf() ConfToml {
 	conf.Ios.KeepAliveTimeout = 90
 	conf.Ios.KeepAliveConns = numCPU
 	conf.Ios.Topic = ""
+	conf.Ios.UseJWT = false
+	conf.Ios.AuthKeyPath = ""
+	conf.Ios.KeyID = ""
+	conf.Ios.TeamID = ""
 	// log
 	conf.Log.AccessLog = "stdout"
 	conf.Log.ErrorLog = "stderr"
