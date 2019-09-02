@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/mercari/gaurun/gcm"
+	"github.com/jxpress/gaurun/gcm"
 )
 
 func keepAliveInterval(keepAliveTimeout int) int {

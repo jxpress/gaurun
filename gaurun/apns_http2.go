@@ -11,9 +11,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/RobotsAndPencils/buford/payload"
-	"github.com/RobotsAndPencils/buford/payload/badge"
-	"github.com/RobotsAndPencils/buford/push"
+	"github.com/jxpress/buford/payload"
+	"github.com/jxpress/buford/payload/badge"
+	"github.com/jxpress/buford/push"
 	"github.com/sideshow/apns2"
 	"github.com/sideshow/apns2/token"
 
